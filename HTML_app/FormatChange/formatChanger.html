@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <label>整形したいログファイルを入力してください(複数可) : </label>
+    <input type="file" id="fileinput" multiple />
+    <br />
+    <label>過去のログのテキストvarを入力してください(なければプレーンテキスト) :
+    </label>
+    <input type="file" id="txtinput" />
+
+    <script>
+      var str = ""; //今回追加したいログのテキストver
+      var prevStr = ""; //これまでに追加したログのテキストver + str
+      var obj2 = document.getElementById("txtinput"); //txt
+      var ProcessIDList = {};
+      var removeActivityList = [
+        "ayu",
+        'body-container',
+        'coal',
+        'content',
+        'httpメッセージ',
+        'ko',
+        'light',
+        'main1',
+        'main2',
+        'main3',
+        'main4',
+        'matome',
+        'menu-bar',
+        'menu-bar-hover-placeholder',
+        'navy',
+        'oya',
+        'page-wrapper',
+        'personjs',
+        'rust',
+        'search-toggle',
+        'search-wrapper',
+        'searchbar',
+        'sidebar',
+        'sidebar-resize-handle',
+        'sidebar-toggle',
+        'theme-list',
+        'theme-toggle',
+        'title',
+        
+        
+        
+        
+
+      ]
+      var removeList = [
+        "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646",
+      ];
+      let studentList = {}; //studentNum:[caseID,Date,Second]
+
+      const caseTime = 30 * 60; //同一のcaseとみなす期間
+      let createdCaseIDList = [];
+
+      /**
+       *  Simple JavaScript Promise that reads a file as text.
+       **/
+      function readFileAsText(file) {
+        return new Promise(function (resolve, reject) {
+          let fr = new FileReader();
+
+          fr.onload = function () {
+            resolve(fr.result);
+          };
+
+          fr.onerror = function () {
+            reject(fr);
+          };
+
+          fr.readAsText(file);
+        });
+      }
+
+      // Handle multiple fileuploads
+      document.getElementById("fileinput").addEventListener(
+        "change",
+        function (ev) {
+          let files = ev.currentTarget.files;
+          let readers = [];
+
+          // Abort if there were no files selected
+          if (!files.length) return;
+
+          // Store promises in array
+          for (let i = 0; i < files.length; i++) {
+            readers.push(readFileAsText(files[i]));
+          }
+
+          // Trigger Promises
+          Promise.all(readers).then((values) => {
+            // Values will be an array that contains an item
+            // with the text of every selected file
+            // ["File1 Content", "File2 Content" ... "FileN Content"]
+            for (var j = 0; j < values.length; j++) {
+              var separate = values[j].split("\n");
+              //下記にif文を追加すると、特定のログのみを抽出しログを整形することが可能である。
+
+              for (var i = 0; i < separate.length - 1; i++) {
+                if (
+                  separate[i].indexOf('"i"') != -1 && //ProcessIDが含まれるか？
+                  studentIDcheck(
+                    separate[i].substring(
+                      separate[i].indexOf('"c"') + 5,
+                      separate[i].indexOf('"i"') - 2 //ListにstudentNUmが含まれていないか
+                    )
+                  ) && //時間のフォーマットが正しいか？
+                  checkTimeFormat(
+                    (eStr = separate[i].substring(
+                      separate[i].indexOf('"s"') + 5,
+                      separate[i].indexOf('"e"') - 2
+                    ))
+                  )
+                  &&
+                  (checkActivity(separate[i].substring(
+                    separate[i].indexOf('"i"') + 5,
+                    separate[i].indexOf('"s"') - 2
+                  )))
+
+
+                
+                ) {
+                  //プロセスIDがあるかのチェックと,studentlistにユーザIDがないかのチェック
+
+                  var TitleStr = separate[i].substring(
+                    separate[i].indexOf('"t"') + 5,
+                    separate[i].indexOf('"y"') - 2
+                  ); //titile
+                  var StudentNumStr = separate[i].substring(
+                    separate[i].indexOf('"c"') + 5,
+                    separate[i].indexOf('"i"') - 2
+                  ); //StudentNum
+                  var startTimeStr = separate[i].substring(
+                    separate[i].indexOf('"s"') + 5,
+                    separate[i].indexOf('"e"') - 2
+                  ); //start
+                  var endTimeStr = separate[i].substring(
+                    separate[i].indexOf('"e"') + 5,
+                    separate[i].indexOf('"t"') - 2
+                  ); //end
+                  var ElementStr = separate[i].substring(
+                    separate[i].indexOf('"i"') + 5,
+                    separate[i].indexOf('"s"') - 2
+                  ); //Element
+
+                  var BrowzerStr = separate[i].substring(
+                    separate[i].indexOf('"y"') + 5,
+                    separate[i].indexOf('"z"') - 2
+                  ); //browser
+
+                  var DeviceStr = separate[i].substring(
+                    separate[i].indexOf('"z"') + 5,
+                    separate[i].indexOf('"p"') - 2
+                  ); //browser
+                  var ProcessIDStr = separate[i].substring(
+                    separate[i].indexOf('"p"') + 5,
+                    separate[i].length - 2
+                  ); //processID
+
+                  ProcessIDStr = checkProcessID(ProcessIDStr, StudentNumStr); //prosessIdの重複チェック
+
+                  TitleStr = transComma(TitleStr);
+                  startTimeStr = transComma(startTimeStr);
+                  endTimeStr = transComma(endTimeStr);
+                  DeviceStr = transComma(DeviceStr);
+
+                  str +=
+                    ProcessIDStr +
+                    "," +
+                    StudentNumStr +
+                    "," +
+                    ElementStr +
+                    "," +
+                    startTimeStr +
+                    "," +
+                    endTimeStr +
+                    "," +
+                    TitleStr +
+                    "," +
+                    DeviceStr +
+                    "," +
+                    BrowzerStr +
+                    "\n";
+                } else {
+                }
+              }
+            }
+          });
+        },
+        false
+      );
+
+      obj2.addEventListener(
+        "change",
+        function (evt) {
+          var file = evt.target.files;
+          //FileReaderの作成
+          var reader = new FileReader();
+          //テキスト形式で読み込む
+          reader.readAsText(file[0]);
+          //読込終了後の処理
+          reader.onload = function (ev) {
+            prevStr = reader.result + str;
+            const blob = new Blob([prevStr], {
+              type: "text/plain",
+            }); // Blob オブジェクトの作成
+            download();
+            const link = document.createElement("a");
+            link.download = "test.txt"; // ダウンロードファイル名称
+            link.href = URL.createObjectURL(blob); // オブジェクト URL を生成
+            link.click(); // クリックイベントを発生させる
+            URL.revokeObjectURL(link.href); // オブジェクト URL を解放
+            //download();
+          };
+        },
+        false
+      );
+
+      function download() {
+        const blob = new Blob([prevStr], {
+          type: "text/plain",
+        }); // Blob オブジェクトの作成
+        const link = document.createElement("a");
+        link.download = "test.csv"; // ダウンロードファイル名称
+        link.href = URL.createObjectURL(blob); // オブジェクト URL を生成
+        link.click(); // クリックイベントを発生させる
+        URL.revokeObjectURL(link.href); // オブジェクト URL を解放
+      }
+      /*
+        1.logを読み込む
+        2.logを変形する、変数に保管
+
+        3.これまでのログを読み込みテキストverで保管
+        4.これまでと現在のログを足し合わせてcsvで出力
+        5.これまでと現在のログを足し合わせてtxtで出力
+        */
+
+      function checkProcessID(ID, studentNumber) {
+        //確認したいprocessIDとstudentNumber
+        console.log(ID);
+        returnID = ID;
+        if (Object.keys(ProcessIDList).indexOf("ID") != -1) {
+          //リストにIDが存在する
+          if (ProcessIDList.ID == studentNumber) {
+            //学籍番号が合致する
+          } else {
+            //学籍番号が合致しない
+            returnID = checkProcessID(++ID, studentNumber);
+          }
+        } else {
+          //リストにIDが存在しないとき
+          ProcessIDList[ID] = studentNumber;
+        }
+        return returnID;
+      }
+
+      function transComma(str) {
+        //console.log("変換前: " + str);
+        while (str.indexOf(",") != -1) {
+          //console.log(",が含まれます")
+          str = str.replace(",", " ");
+        }
+        //console.log("変換後: " + str);
+        return str;
+      }
+
+      function studentIDcheck(sID) {
+        var result = true;
+        for (const id of removeList) {
+          if (id == sID) {
+            result = false;
+          }
+        }
+        return result;
+      }
+
+      function addList(studentnum, title, time) {
+        studentNum = studentnum + "," + title;
+        //console.log(studentNum);
+        if (studentNum in studentList) {
+          //既にリストに学籍番号がある場合
+
+          if (
+            !checkBeforeTime(
+              studentList[studentNum][2],
+              createList(title, time)[2]
+            ) ||
+            studentList[studentNum][1] != calcDate(time)
+          ) {
+            console.log("更新前：" + studentList[studentNum][0]);
+            studentList[studentNum] = createList(title, time);
+            //   studentList[studentNum][0] = createCaseID();
+            //   studentList[studentNum][2] = createList(time)[2];
+            console.log("更新後：" + studentList[studentNum][0]);
+          } else if (
+            checkBeforeTime(
+              studentList[studentNum][2],
+              createList(title, time)[2]
+            ) &&
+            studentList[studentNum][1] == calcDate(time)
+          ) {
+            studentList[studentNum][2] = calcSecond(time);
+            console.log("changetime");
+          }
+        } else {
+          console.log("a");
+          studentList[studentNum] = createList(title, time);
+          console.log(studentList[studentNum][2]);
+        }
+        //console.log(studentList[studentNum][0]);
+        console.log(studentList);
+      }
+      function createList(title, time) {
+        return [createCaseID(), calcDate(time), calcSecond(time), title];
+      }
+
+      function calcDate(time) {
+        console.log(time);
+        OnlyDate = time.substring(0, time.indexOf(" "));
+        return OnlyDate;
+      }
+
+      function calcSecond(time) {
+        OnlyTime = time.substring(time.indexOf(" "), time.length);
+        //console.log(OnlyTime);
+
+        if (OnlyTime.indexOf(":") != -1) {
+          Split = OnlyTime.split(":");
+
+          Split = transNum(Split);
+
+          second =
+            parseInt(Split[2], 10) +
+            parseInt(Split[1], 10) * 60 +
+            parseInt(Split[0], 10) * 3600;
+
+          //console.log(second);
+
+          if (Split.length != 3) {
+            console.log("err:FormatErr at OnlyTime type2");
+          }
+        } else {
+          console.log("err:FormatErr at OnlyTime type1");
+        }
+
+        return second;
+      }
+      function checkBeforeTime(t1, t2) {
+        //同じケースであればtrue
+        //t1既存の時間　t2新しく追加する時間
+        var judge = false;
+        if (t2 - t1 < caseTime) {
+          judge = true;
+        }
+        return judge;
+      }
+
+      function checkTimeFormat(time) {
+        var judge = true;
+        if (time.indexOf("AM") != -1 || time.indexOf("PM") != -1) {
+          judge = false;
+        }
+        console.log(judge);
+        return judge;
+      }
+
+      function transNum(split) {
+        split[0] = split[0].replace(" ", "");
+        for (let i = 0; i < split.length; i++) {
+          if (split[i].substring(0, 1) == 0) {
+            split[i] = split[i].substring(1, 2);
+          }
+          //console.log(split[i]);
+        }
+        return split;
+      }
+
+      function createCaseID() {
+        random = getRandomInt(10000000);
+        while (createdCaseIDList.indexOf(random) != -1) {
+          random = getRandomInt(10000000);
+        }
+        createdCaseIDList.push(random);
+        return random;
+      }
+      function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+      }
+
+      function removePID(str) {
+        //console.log("変更前" + str);
+        if (str.indexOf('","') != -1) {
+          str = str.substring(0, str.indexOf('"i"') - 2);
+          //console.log("変更後" + str);
+        }
+
+        return str;
+      }
+
+      function checkActivity(Activity){//引数がremoveActiviyListにないか　ない場合はtrue
+        judge = true;
+        if(removeActivityList.indexOf(Activity) == -1){
+          judge = false
+        }
+        return judge;
+
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,223 @@
+body {
+  background-color: #d9fffb;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+.App-p {
+  text-align: center;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.App-RangeButton {
+  margin: 10px;
+  text-align: center;
+  translate: 0px 0px;
+  appearance: none;
+  border: 0;
+  border-radius: 5px;
+  background: #59bce6;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 16px;
+}
+.App-RangeButton:hover {
+  box-shadow: 0 0 10px 0 rgb(160, 160, 211) inset,
+    0 0 10px 4px rgb(218, 218, 221);
+}
+.menue {
+  margin-top: 21px;
+  margin-left: 15%;
+  margin-right: 15%;
+  background-color: #686868;
+  padding: 15px;
+  border-color: rgb(26, 26, 26);
+  border-radius: 50px;
+}
+.selectDay-div {
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+td,
+th {
+  text-align: center;
+  /* margin-right: 40px; */
+  font-size: larger;
+}
+table {
+  /* display: flex; */
+  display: inline-block;
+  border: solid 2px;
+  text-align: center;
+  margin-bottom: 20px;
+  border-color: beige;
+  border-radius: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+
+  padding-right: 20px;
+}
+tr {
+  margin: auto;
+  border: solid 2px;
+  border-color: rgb(143, 143, 143);
+}
+
+input {
+  transform: scale(3);
+  margin: 30.5px;
+}
+.personTable {
+  margin-left: 20px;
+  margin-right: 20px;
+
+  background-color: #f1e1a9c9;
+}
+
+.placeTable {
+  margin-left: 20px;
+  margin-right: 20px;
+  background-color: #f1e1a9c9;
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.SelectedOptionMenue-button {
+  display: flex;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #228bc8;
+  box-sizing: border-box;
+  width: 60%;
+  height: 60px;
+  padding: 0 25px;
+  color: #228bc8;
+  font-size: 16px;
+  text-align: left;
+  text-decoration: none;
+  position: relative;
+  transition-duration: 0.2s;
+}
+.SelectedOptionMenue-button:hover {
+  background: #228bc8;
+  border: 1px solid #05639a;
+  color: #fff;
+}
+.SelectedOptionMenue-button:before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 40px 50px;
+  border-color: transparent transparent #228bc8 transparent;
+}
+.SelectedOptionMenue-button span {
+  position: absolute;
+  bottom: 12px;
+  right: 20px;
+  display: inline-block;
+}
+.SelectedOptionMenue-button7 span:before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin-top: -8px;
+}
+.SelectedOptionMenue-button span:after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border: 0;
+  border-top: 2px solid #228bc8;
+  border-right: 2px solid #228bc8;
+  transform: rotate(45deg);
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  margin-top: -3px;
+}
+
+.Graph-p {
+  text-align: center;
+}
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.Graph-button {
+  width: 200px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  margin: 20px;
+  height: 55px;
+  text-align: center;
+  border: none;
+  background-size: 300% 100%;
+
+  border-radius: 50px;
+  moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  -webkit-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
+
+.Graph-button:hover {
+  background-position: 100% 0;
+  moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  -webkit-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
+
+.Graph-button:focus {
+  outline: none;
+}
+
+.Graph-button {
+  background-image: linear-gradient(
+    to right,
+    #29323c,
+    #485563,
+    #2b5876,
+    #4e4376
+  );
+  box-shadow: 0 4px 15px 0 rgba(45, 54, 65, 0.75);
+}
